@@ -20,6 +20,8 @@ from nbcore import build
 import build_readme
 import build_solutions
 import lab_answers
+import use_cases
+from nbcore import case, cases_heading
 import content_a
 import content_b
 import content_c
@@ -67,12 +69,30 @@ MODULES = [
 BUILD_DIR = ROOT / ".build" / "solutions"
 
 
+def with_use_cases(number, cells):
+    """Insert the module's extra use cases after the last slide, before the lab."""
+    extra = use_cases.CASES.get(number)
+    if not extra:
+        return cells
+
+    block = [cases_heading()]
+    for i, (title, why, src) in enumerate(extra, start=1):
+        block.append(case(i, title, why))
+        block.append(("code", None, src.strip("\n")))
+
+    for index, (kind, _meta, _payload) in enumerate(cells):
+        if kind == "lab":
+            return cells[:index] + block + cells[index:]
+    return cells + block
+
+
 def write_all():
     """Student notebooks are committed. Solved notebooks are build artifacts."""
     (ROOT / "notebooks").mkdir(exist_ok=True)
     BUILD_DIR.mkdir(parents=True, exist_ok=True)
 
-    for slug, num, _title, _sub, cells in MODULES:
+    for slug, num, _title, _sub, raw_cells in MODULES:
+        cells = with_use_cases(num, raw_cells)
         student = build(cells, solved=False)
         solved = build(cells, solved=True, lab_answer=lab_answers.ANSWERS.get(num))
 
@@ -85,7 +105,7 @@ def write_all():
         n_slides = sum(1 for k, _, _ in cells if k == "slide")
         print(
             f"  {slug:26s} {len(cells):3d} cells  {n_code:3d} code  "
-            f"{n_slides:2d} slides  {n_ex} exercises"
+            f"{n_slides:2d} sections  {n_ex} exercises"
         )
 
 
@@ -99,7 +119,9 @@ def write_answers():
 
 
 def write_readme():
-    text = build_readme.build(MODULES)
+    text = build_readme.build(
+        [(s, n, t_, sub, with_use_cases(n, c)) for s, n, t_, sub, c in MODULES]
+    )
     lines = text.count("\n")
     words = len(text.split())
     print(f"  README.md  {lines} lines, about {words:,} words")

@@ -16,9 +16,16 @@ Three places, each holding one thing:
 | `notebooks/` | the working copy: slide headings, code cells, exercises, labs |
 | `solutions/` | the 22 exercise answers and a worked answer for each lab |
 
-Each notebook has runnable code for every slide that has any, **two "Your turn"
+Each notebook has runnable code for every slide that has any, a **More use
+cases** section with three or four further worked scenarios, **two "Your turn"
 cells** with deliberate `____` blanks that fail until you complete them, and a
 **lab** at the end with no starter code.
+
+Most of the use cases are the AI work this course leads into: tokens and what
+they cost, context windows, streaming replies, rate limits, model responses
+that are the wrong shape, chat history, and run logs. They carry an **AI** tag
+in the heading. The rest are the infrastructure jobs the same syntax turns up
+in.
 
 ---
 

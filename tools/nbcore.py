@@ -33,6 +33,20 @@ def slide(n, title, body):
     return ("slide", f"Slide {n} &middot; {title}", body.strip())
 
 
+def case(n, title, body):
+    """An extra worked use case. Renders like a slide: heading in the notebook,
+    heading plus explanation in the README."""
+    return ("slide", f"Use case {n} &middot; {title}", body.strip())
+
+
+def cases_heading():
+    return ("md", None,
+            "---\n\n"
+            "# More use cases\n\n"
+            "The same ideas, applied to situations you will meet in real work. "
+            "Run each one, then change a value and run it again.")
+
+
 def md(text):
     return ("md", None, text.strip("\n"))
 
