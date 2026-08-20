@@ -1,21 +1,34 @@
 # Utrains Python Fundamentals Lab
 #
-# Everything needed to run all eleven notebooks from top to bottom.
-# Install with:   uv pip install -r requirements.txt
+# Every package needed for the notebooks, in one file.
+#
+#   uv pip install -r requirements.txt
+#
+# See README.md for the full setup, including creating the virtual
+# environment and registering the Jupyter kernel.
 
-# --- Jupyter itself ---------------------------------------------------
+# --- Jupyter -----------------------------------------------------------
 jupyterlab>=4.0          # the notebook interface
-notebook>=7.0            # classic notebook interface, optional but handy
+notebook>=7.0            # classic notebook interface
 ipykernel>=6.29          # lets this environment appear as a Jupyter kernel
 
-# --- Imported by the notebooks ----------------------------------------
+# --- Imported by the notebooks -----------------------------------------
 # Modules 1 to 10 import only the standard library: json, os, time,
-# datetime, math, pathlib, asyncio, dataclasses. Nothing to install.
-#
-# Module 11 imports pydantic. That is the only third party import in the
-# whole course.
-pydantic>=2.0
+# datetime, math, pathlib, asyncio and dataclasses. Nothing to install
+# for those.
+pydantic>=2.0            # Module 11, the only third party import
 
-# --- Used by tools/build.py to regenerate and verify the notebooks ----
+# --- Module 10's AI packages -------------------------------------------
+# Module 10 teaches these. The notebook shows them as reference code and
+# runs a standard library stand-in, so the course works without an API
+# key. Installed here so the slide examples run as written once you add
+# a key to your .env file.
+python-dotenv>=1.0       # Module 10, Slide 6, config versus secrets
+openai>=1.0              # Module 10, Slide 9
+langchain>=0.2           # Module 10, Slide 10
+langchain-openai>=0.1    # Module 10, Slide 10
+langgraph>=0.2           # Module 10, Slides 11 and 14
+
+# --- Used by tools/ to regenerate and verify the notebooks -------------
 nbformat>=5.9
 nbclient>=0.9
