@@ -4,7 +4,7 @@ Modules 9 and 10 follow their slide decks section by section. Module 11 has no
 deck, so it follows the course reference guide's section order instead.
 """
 
-from nbcore import header, md, slide, code, todo, turn, lab, practice, heads_up
+from nbcore import header, md, only_nb, slide, code, todo, turn, lab, practice, heads_up
 
 # ---------------------------------------------------------------- Module 9
 

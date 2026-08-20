@@ -4,18 +4,21 @@ Hands-on Jupyter notebooks for the **Utrains Python Fundamentals** course.
 Eleven modules, one notebook each, every cell runnable.
 
 **The full slide content is in this README**, module by module, in deck order.
-Read it here, teach from it, or use it to catch up on a module you missed. Each
-notebook mirrors the same slides, so a heading in the deck, a heading in this
-README and a heading in the notebook all say the same thing.
+That is where you read. The notebooks are where you run things, so they carry
+the slide headings as signposts and then get straight to the code, without
+repeating the explanation you just read.
 
-Each notebook has:
+Three places, each holding one thing:
 
-- **Markdown commentary** before every block, in the deck's own words
-- **Runnable code cells** that work as written
-- **Two "Your turn" cells** with deliberate `____` blanks. They will not run
-  until you complete them. That is the point.
-- **A lab** at the end: a short task with no starter code
-- **The four practice exercises** from the module's practice slide
+| Where | What it is |
+|---|---|
+| this README | every slide, in full, in deck order, with its code |
+| `notebooks/` | the working copy: slide headings, code cells, exercises, labs |
+| `solutions/` | the answers to the 22 exercises, as markdown |
+
+Each notebook has runnable code for every slide that has any, **two "Your turn"
+cells** with deliberate `____` blanks that fail until you complete them, and a
+**lab** at the end with no starter code.
 
 ---
 
@@ -167,8 +170,9 @@ Run it as it is first. It will fail, either with a `SyntaxError` or a
 `NameError` on the name `____`. Read the error, fix the blank, run it again.
 Getting used to reading the error message is half of what these cells teach.
 
-If you get stuck, the matching notebook in `solutions/` has the answer. Try it
-yourself first; the answer is much less useful than the attempt.
+If you get stuck, [`solutions/`](solutions/) has one markdown file per module
+with the answer to both exercises. Try it yourself first; the answer is much
+less useful than the attempt.
 
 **Every exercise stays inside its own module.** A Module 2 exercise will never
 need an `if`, because `if` is not taught until Module 5. The build enforces
@@ -182,13 +186,13 @@ this, so you will never be asked for something you have not been shown.
 README.md             this file, including all the slide content
 requirements.txt      every package the course needs
 notebooks/            the student notebooks, blanks left in
-solutions/            the same notebooks with every blank filled
+solutions/            one markdown answer sheet per module
 data/servers.txt      sample input for the Module 9 lab
 tools/                the build and verification scripts
 ```
 
-`scratch/` folders appear inside `notebooks/` and `solutions/` when you run
-Module 9. They are gitignored.
+A `scratch/` folder appears inside `notebooks/` when you run Module 9, and a
+`.build/` folder appears when you run the build. Both are gitignored.
 
 | # | Notebook | Covers |
 |---|---|---|
@@ -232,16 +236,20 @@ Module 6, and Module 6 reminds them.
 
 ## For instructors
 
-`tools/build.py` regenerates the notebooks **and this README** from a single
-source, so a correction is made once and lands in the student notebook, the
-solution notebook and the README together.
+`tools/build.py` regenerates the notebooks, the answer sheets **and this
+README** from a single source. A slide correction is made once, in one file,
+and lands in all three. Nothing is written twice, so nothing can disagree.
 
 ```bash
-python tools/build.py             # regenerate notebooks and README
-python tools/build.py --run       # also execute every solution notebook
+python tools/build.py             # regenerate notebooks, answers and README
+python tools/build.py --run       # also execute every solved notebook
 python tools/check_exercises.py   # confirm the blanks are still incomplete
 python tools/check_scope.py       # confirm nothing is used before its module
 ```
+
+Fully solved notebooks are build artifacts, not committed. `build.py` writes
+them into `.build/solutions/`, which is what `--run` executes. If you want one
+to hand to a student, build it and send that file.
 
 The three checks are what keep the material honest:
 

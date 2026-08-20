@@ -18,6 +18,7 @@ import nbformat as nbf
 
 from nbcore import build
 import build_readme
+import build_solutions
 import content_a
 import content_b
 import content_c
@@ -62,26 +63,37 @@ MODULES = [
 ]
 
 
+BUILD_DIR = ROOT / ".build" / "solutions"
+
+
 def write_all():
+    """Student notebooks are committed. Solved notebooks are build artifacts."""
     (ROOT / "notebooks").mkdir(exist_ok=True)
-    (ROOT / "solutions").mkdir(exist_ok=True)
+    BUILD_DIR.mkdir(parents=True, exist_ok=True)
 
     for slug, _num, _title, _sub, cells in MODULES:
         student = build(cells, solved=False)
         solved = build(cells, solved=True)
 
         nbf.write(student, str(ROOT / "notebooks" / f"{slug}.ipynb"))
-        nbf.write(solved, str(ROOT / "solutions" / f"{slug}_solved.ipynb"))
+        nbf.write(solved, str(BUILD_DIR / f"{slug}_solved.ipynb"))
 
         n_ex = sum(1 for k, _, _ in cells if k == "todo")
         n_code = sum(1 for k, _, _ in cells if k in ("code", "todo"))
-        n_slides = sum(
-            1 for k, s, _ in cells if k == "md" and s.startswith("## Slide ")
-        )
+        n_slides = sum(1 for k, _, _ in cells if k == "slide")
         print(
             f"  {slug:26s} {len(cells):3d} cells  {n_code:3d} code  "
             f"{n_slides:2d} slides  {n_ex} exercises"
         )
+
+
+def write_answers():
+    n = build_solutions.build(MODULES)
+    total = sum(
+        (ROOT / "solutions" / f).stat().st_size
+        for f in ["README.md"] + [f"{m[0]}.md" for m in MODULES]
+    )
+    print(f"  solutions/  {n} answer sheets plus an index, {total / 1024:.1f} KB total")
 
 
 def write_readme():
@@ -96,7 +108,7 @@ def run_all():
 
     failures = []
     for slug, _num, _title, _sub, _cells in MODULES:
-        path = ROOT / "solutions" / f"{slug}_solved.ipynb"
+        path = BUILD_DIR / f"{slug}_solved.ipynb"
         nb = nbf.read(str(path), as_version=4)
         client = NotebookClient(
             nb,
@@ -122,6 +134,9 @@ if __name__ == "__main__":
 
     print("building notebooks")
     write_all()
+
+    print("\nbuilding answer sheets")
+    write_answers()
 
     print("\nbuilding README")
     write_readme()

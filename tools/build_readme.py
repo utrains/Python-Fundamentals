@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 """Generate README.md: the hand written intro plus all the slide content.
 
-The course content section is built from the same cell lists that build the
-notebooks, so the README and the notebooks cannot drift apart. Exercise cells
-and lab briefs are skipped, because those only make sense somewhere you can run
+This is the reading copy. Every slide appears here in full, in deck order, with
+the code from the notebook underneath it. The notebooks carry only the slide
+headings, so nothing is duplicated between the two.
+
+Exercises and labs are left out on purpose: they belong somewhere you can run
 them.
 """
 
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-LAB_PLACEHOLDER = "# Your lab answer goes here."
 
 
 def demote(text):
-    """Push every markdown heading down two levels."""
+    """Push every markdown heading down two levels, leaving code fences alone."""
     out = []
     fenced = False
     for line in text.splitlines():
@@ -33,38 +34,37 @@ def module_section(number, title, subtitle, slug, cells):
         f"*{subtitle}*",
         "",
         f"Notebook: [`notebooks/{slug}.ipynb`](notebooks/{slug}.ipynb) &middot; "
-        f"solution: [`solutions/{slug}_solved.ipynb`](solutions/{slug}_solved.ipynb)",
+        f"answers: [`solutions/{slug}.md`](solutions/{slug}.md)",
         "",
     ]
 
-    for kind, src, _solution in cells[1:]:      # cells[0] is the notebook header
-        if kind == "todo":
+    for kind, meta, payload in cells:
+        if kind in ("header", "turn", "lab", "todo", "only_nb"):
             continue
 
-        if kind == "code":
-            if src.strip() == LAB_PLACEHOLDER:
+        if kind == "slide":
+            parts += [f"#### {meta}", "", payload, ""]
+
+        elif kind == "md":
+            parts += [demote(payload), ""]
+
+        elif kind == "code":
+            if payload.strip() == "# Your lab answer goes here.":
                 continue
-            parts.append("```python")
-            parts.append(src)
-            parts.append("```")
-            parts.append("")
-            continue
+            parts += ["```python", payload, "```", ""]
 
-        text = src.strip()
-
-        if text.startswith("---"):
-            # turn / lab / practice blocks all start with a rule
-            if "## Practice exercises" in text:
-                body = text.split("## Practice exercises", 1)[1]
-                body = body.split("*Utrains", 1)[0].rstrip()
-                parts.append("#### Practice exercises")
-                parts.append("")
-                parts.append(demote(body).strip())
-                parts.append("")
-            continue
-
-        parts.append(demote(text))
-        parts.append("")
+        elif kind == "practice":
+            items = "\n".join(f"{i}. {e}" for i, e in enumerate(payload, 1))
+            parts += [
+                "#### Practice exercises",
+                "",
+                items,
+                "",
+                "#### Module complete",
+                "",
+                meta,
+                "",
+            ]
 
     return "\n".join(parts).rstrip() + "\n"
 
@@ -74,15 +74,14 @@ def build(modules):
 
     chunks = [intro.rstrip(), ""]
     for slug, number, title, subtitle, cells in modules:
-        chunks.append("---")
-        chunks.append("")
-        chunks.append(module_section(number, title, subtitle, slug, cells))
-        chunks.append("")
+        chunks += ["---", "", module_section(number, title, subtitle, slug, cells), ""]
 
-    chunks.append("---")
-    chunks.append("")
-    chunks.append("Utrains &middot; support@utrains.org &middot; <https://utrains.org>")
-    chunks.append("")
+    chunks += [
+        "---",
+        "",
+        "Utrains &middot; support@utrains.org &middot; <https://utrains.org>",
+        "",
+    ]
 
     text = "\n".join(chunks)
     (ROOT / "README.md").write_text(text)

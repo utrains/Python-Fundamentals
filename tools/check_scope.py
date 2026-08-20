@@ -130,7 +130,7 @@ def main():
     problems = []
     scanned = 0
 
-    for path in sorted((ROOT / "solutions").glob("*.ipynb")):
+    for path in sorted((ROOT / ".build" / "solutions").glob("*.ipynb")):
         module = int(path.name[:2])
         allowed = ALLOWED_EARLY.get(module, {})
         nb = nbf.read(str(path), as_version=4)

@@ -4,18 +4,21 @@ Hands-on Jupyter notebooks for the **Utrains Python Fundamentals** course.
 Eleven modules, one notebook each, every cell runnable.
 
 **The full slide content is in this README**, module by module, in deck order.
-Read it here, teach from it, or use it to catch up on a module you missed. Each
-notebook mirrors the same slides, so a heading in the deck, a heading in this
-README and a heading in the notebook all say the same thing.
+That is where you read. The notebooks are where you run things, so they carry
+the slide headings as signposts and then get straight to the code, without
+repeating the explanation you just read.
 
-Each notebook has:
+Three places, each holding one thing:
 
-- **Markdown commentary** before every block, in the deck's own words
-- **Runnable code cells** that work as written
-- **Two "Your turn" cells** with deliberate `____` blanks. They will not run
-  until you complete them. That is the point.
-- **A lab** at the end: a short task with no starter code
-- **The four practice exercises** from the module's practice slide
+| Where | What it is |
+|---|---|
+| this README | every slide, in full, in deck order, with its code |
+| `notebooks/` | the working copy: slide headings, code cells, exercises, labs |
+| `solutions/` | the answers to the 22 exercises, as markdown |
+
+Each notebook has runnable code for every slide that has any, **two "Your turn"
+cells** with deliberate `____` blanks that fail until you complete them, and a
+**lab** at the end with no starter code.
 
 ---
 
@@ -167,8 +170,9 @@ Run it as it is first. It will fail, either with a `SyntaxError` or a
 `NameError` on the name `____`. Read the error, fix the blank, run it again.
 Getting used to reading the error message is half of what these cells teach.
 
-If you get stuck, the matching notebook in `solutions/` has the answer. Try it
-yourself first; the answer is much less useful than the attempt.
+If you get stuck, [`solutions/`](solutions/) has one markdown file per module
+with the answer to both exercises. Try it yourself first; the answer is much
+less useful than the attempt.
 
 **Every exercise stays inside its own module.** A Module 2 exercise will never
 need an `if`, because `if` is not taught until Module 5. The build enforces
@@ -182,13 +186,13 @@ this, so you will never be asked for something you have not been shown.
 README.md             this file, including all the slide content
 requirements.txt      every package the course needs
 notebooks/            the student notebooks, blanks left in
-solutions/            the same notebooks with every blank filled
+solutions/            one markdown answer sheet per module
 data/servers.txt      sample input for the Module 9 lab
 tools/                the build and verification scripts
 ```
 
-`scratch/` folders appear inside `notebooks/` and `solutions/` when you run
-Module 9. They are gitignored.
+A `scratch/` folder appears inside `notebooks/` when you run Module 9, and a
+`.build/` folder appears when you run the build. Both are gitignored.
 
 | # | Notebook | Covers |
 |---|---|---|
@@ -232,16 +236,20 @@ Module 6, and Module 6 reminds them.
 
 ## For instructors
 
-`tools/build.py` regenerates the notebooks **and this README** from a single
-source, so a correction is made once and lands in the student notebook, the
-solution notebook and the README together.
+`tools/build.py` regenerates the notebooks, the answer sheets **and this
+README** from a single source. A slide correction is made once, in one file,
+and lands in all three. Nothing is written twice, so nothing can disagree.
 
 ```bash
-python tools/build.py             # regenerate notebooks and README
-python tools/build.py --run       # also execute every solution notebook
+python tools/build.py             # regenerate notebooks, answers and README
+python tools/build.py --run       # also execute every solved notebook
 python tools/check_exercises.py   # confirm the blanks are still incomplete
 python tools/check_scope.py       # confirm nothing is used before its module
 ```
+
+Fully solved notebooks are build artifacts, not committed. `build.py` writes
+them into `.build/solutions/`, which is what `--run` executes. If you want one
+to hand to a student, build it and send that file.
 
 The three checks are what keep the material honest:
 
@@ -275,7 +283,7 @@ README. They live in the notebooks, where you can actually run them.
 
 *Install Python, meet print() and input(), run your first script, and do a little arithmetic.*
 
-Notebook: [`notebooks/01_getting_started.ipynb`](notebooks/01_getting_started.ipynb) &middot; solution: [`solutions/01_getting_started_solved.ipynb`](solutions/01_getting_started_solved.ipynb)
+Notebook: [`notebooks/01_getting_started.ipynb`](notebooks/01_getting_started.ipynb) &middot; answers: [`solutions/01_getting_started.md`](solutions/01_getting_started.md)
 
 #### Slide 2 &middot; What Is Python?
 
@@ -425,8 +433,6 @@ print(name)
 typed digits. You will need to convert that string before doing maths with it.
 Module 2 covers how.
 
-> **Heads up.** A notebook cell that calls `input()` sits there waiting, which makes a notebook awkward to run top to bottom. So from here on we simulate the typed answer by assigning the value directly. Everything else is identical to what you would write in a real script.
-
 ```python
 # In a script this line would be:  name = input("Enter your name: ")
 name = "Serge"
@@ -491,14 +497,10 @@ print("hello,", full_name)
 
 #### Practice exercises
 
-These are the four exercises from the module's practice slide, word for word.
-
 1. Write a script that prints a deployment banner with your service name and version number using variables and print().
 2. Use input() to ask for a cloud region name, then print a one-line confirmation message using that region.
 3. Use the arithmetic operators from this module to calculate the percentage of failed requests, given a total request count and a failed count.
 4. Use end and flush to print three fake response tokens on the same line, then a final newline, the way a model's reply might stream in.
-
----
 
 #### Module complete
 
@@ -511,7 +513,7 @@ You can now install Python, print and read input, and run your first script.
 
 *Store values in variables, meet Python's core data types, and convert safely between them.*
 
-Notebook: [`notebooks/02_variables_and_types.ipynb`](notebooks/02_variables_and_types.ipynb) &middot; solution: [`solutions/02_variables_and_types_solved.ipynb`](solutions/02_variables_and_types_solved.ipynb)
+Notebook: [`notebooks/02_variables_and_types.ipynb`](notebooks/02_variables_and_types.ipynb) &middot; answers: [`solutions/02_variables_and_types.md`](solutions/02_variables_and_types.md)
 
 #### Slide 2 &middot; What Is a Variable?
 
@@ -710,14 +712,10 @@ print("Right ->", int(num1) + int(num2))       # 8, actually added
 
 #### Practice exercises
 
-These are the four exercises from the module's practice slide, word for word.
-
 1. Store a server's CPU count as an int and its memory in GB as a float, then print a one-line summary using both.
 2. Take a cloud bill amount as a string, cast it to a float, and print what a 10 percent increase would look like.
 3. Use isinstance() to check whether an incoming alert's severity level is an int before comparing it to a threshold.
 4. Store a model's temperature setting as a float, then cast a string like "0.9" into a float to update it safely.
-
----
 
 #### Module complete
 
@@ -730,7 +728,7 @@ You can now store values in variables, name them properly, and convert between t
 
 *Create, slice, format, and clean up text, from a single word to a multi-line AI prompt.*
 
-Notebook: [`notebooks/03_strings.ipynb`](notebooks/03_strings.ipynb) &middot; solution: [`solutions/03_strings_solved.ipynb`](solutions/03_strings_solved.ipynb)
+Notebook: [`notebooks/03_strings.ipynb`](notebooks/03_strings.ipynb) &middot; answers: [`solutions/03_strings.md`](solutions/03_strings.md)
 
 #### Slide 2 &middot; What Is a String?
 
@@ -740,8 +738,6 @@ triple quotes.
 - **Immutable.** Once created, a string cannot be changed in place.
 - **Indexed.** Every character has a position, so you can grab one directly.
 - **Iterable.** You can loop through a string one character at a time.
-
-> **Heads up.** The `for` loop below is here only to show what *iterable* means. Module 5 teaches loops properly. Nothing else in this notebook uses one.
 
 ```python
 word = "Python"
@@ -933,14 +929,10 @@ line = "2024-08-19 [ERROR] payment-service | Database Connection Failed | retry=
 
 #### Practice exercises
 
-These are the four exercises from the module's practice slide, word for word.
-
 1. Use a triple-quoted string to write a short multi-line deployment changelog entry.
 2. Use string slicing to pull the region code out of an instance id like "i-0123456789-us-east-1".
 3. Use split() and join() to reformat a log line so the timestamp and message are separated by a single dash.
 4. Build a SYSTEM_PROMPT string with an f-string that inserts a variable holding the assistant's persona name.
-
----
 
 #### Module complete
 
@@ -953,7 +945,7 @@ You can now create, slice, format and clean up strings, including multi-line pro
 
 *Do math, compare values, combine conditions, and check what's inside a collection.*
 
-Notebook: [`notebooks/04_operators.ipynb`](notebooks/04_operators.ipynb) &middot; solution: [`solutions/04_operators_solved.ipynb`](solutions/04_operators_solved.ipynb)
+Notebook: [`notebooks/04_operators.ipynb`](notebooks/04_operators.ipynb) &middot; answers: [`solutions/04_operators.md`](solutions/04_operators.md)
 
 #### Slide 2 &middot; What Is an Operator?
 
@@ -1117,14 +1109,10 @@ on_call_region = "eu-west-1"
 
 #### Practice exercises
 
-These are the four exercises from the module's practice slide, word for word.
-
 1. Use the modulus operator to decide whether a build number is even or odd, to route it to a canary group.
 2. Use a comparison operator to check whether a monthly cloud bill has gone over a set budget threshold.
 3. Use and/or to decide whether an alert should page someone, based on high severity and it being business hours.
 4. Use the in operator to check whether a keyword appears in a list of banned prompt terms.
-
----
 
 #### Module complete
 
@@ -1137,7 +1125,7 @@ You can now do maths, compare values, combine conditions and check membership.
 
 *Make decisions with if, repeat work with for and while, and steer loops with break, continue, and pass.*
 
-Notebook: [`notebooks/05_control_flow.ipynb`](notebooks/05_control_flow.ipynb) &middot; solution: [`solutions/05_control_flow_solved.ipynb`](solutions/05_control_flow_solved.ipynb)
+Notebook: [`notebooks/05_control_flow.ipynb`](notebooks/05_control_flow.ipynb) &middot; answers: [`solutions/05_control_flow.md`](solutions/05_control_flow.md)
 
 #### Slide 2 &middot; What Is Control Flow?
 
@@ -1302,14 +1290,10 @@ print("loop finished without doing anything")
 
 #### Practice exercises
 
-These are the four exercises from the module's practice slide, word for word.
-
 1. Write a for loop that prints the status of each server in a list of server names, using a placeholder status.
 2. Write a while loop that checks up to 5 times whether a cloud resource is ready, printing an attempt count each time.
 3. Write an if/elif/else chain that classifies an incident by severity level (1, 2, or 3) and prints the right response.
 4. Write a for loop that prints each character of a string one at a time, the way a streamed response might appear.
-
----
 
 #### Module complete
 
@@ -1322,7 +1306,7 @@ You can now make decisions, repeat work, and steer a loop with break, continue a
 
 *Four ways to hold a group of values, and how to pick the right one.*
 
-Notebook: [`notebooks/06_collections.ipynb`](notebooks/06_collections.ipynb) &middot; solution: [`solutions/06_collections_solved.ipynb`](solutions/06_collections_solved.ipynb)
+Notebook: [`notebooks/06_collections.ipynb`](notebooks/06_collections.ipynb) &middot; answers: [`solutions/06_collections.md`](solutions/06_collections.md)
 
 #### Slide 2 &middot; What Are Collections?
 
@@ -1614,14 +1598,10 @@ print(A.symmetric_difference(B))
 
 #### Practice exercises
 
-These are the four exercises from the module's practice slide, word for word.
-
 1. Store a list of failed pipeline stage names and use a list comprehension to keep only the ones containing "test".
 2. Build a dictionary mapping cloud region names to their instance counts, then print the total across all regions.
 3. Use a set to find the unique error codes out of a list of incident log entries that contains duplicates.
 4. Build a list of dictionaries representing a short chat history, then print only the assistant's replies.
-
----
 
 #### Module complete
 
@@ -1634,7 +1614,7 @@ You can now pick the right collection and work with lists, tuples, dictionaries 
 
 *Catch problems instead of crashing, retry what's worth retrying, and raise your own errors.*
 
-Notebook: [`notebooks/07_handling_errors.ipynb`](notebooks/07_handling_errors.ipynb) &middot; solution: [`solutions/07_handling_errors_solved.ipynb`](solutions/07_handling_errors_solved.ipynb)
+Notebook: [`notebooks/07_handling_errors.ipynb`](notebooks/07_handling_errors.ipynb) &middot; answers: [`solutions/07_handling_errors.md`](solutions/07_handling_errors.md)
 
 #### Slide 2 &middot; When Something Goes Wrong
 
@@ -1705,8 +1685,6 @@ try:
 except json.JSONDecodeError:
     print("Failed to parse API response.")
 ```
-
-> **Heads up.** `import` appears here because JSON parsing needs it. Module 10 explains `import` in full. The short version: it brings in code someone else already wrote, used with a dot, like `json.loads()`.
 
 #### Slide 4 &middot; Multiple except, else, and finally
 
@@ -1800,14 +1778,10 @@ stages = ["build", "test", "migrate", "release"]
 
 #### Practice exercises
 
-These are the four exercises from the module's practice slide, word for word.
-
 1. Wrap a deployment step function in try/except to catch a simulated DeploymentError and print a clear message.
 2. Write a retry loop around a function that checks whether a cloud storage bucket exists, catching a simulated exception.
 3. Use try/except/finally so an incident ticket always gets marked as closed, even if updating it raises an error.
 4. Add retry logic around a function that simulates calling a model API which sometimes raises a TimeoutError.
-
----
 
 #### Module complete
 
@@ -1820,7 +1794,7 @@ You can now catch errors, retry what's worth retrying, and raise your own.
 
 *Package reusable logic, pass arguments four different ways, and stream results with yield.*
 
-Notebook: [`notebooks/08_functions.ipynb`](notebooks/08_functions.ipynb) &middot; solution: [`solutions/08_functions_solved.ipynb`](solutions/08_functions_solved.ipynb)
+Notebook: [`notebooks/08_functions.ipynb`](notebooks/08_functions.ipynb) &middot; answers: [`solutions/08_functions.md`](solutions/08_functions.md)
 
 #### Slide 2 &middot; What Is a Function?
 
@@ -1986,14 +1960,10 @@ print(run_chat(fn=my_bot, user_text="Hello"))
 
 #### Practice exercises
 
-These are the four exercises from the module's practice slide, word for word.
-
 1. Write a function that takes a service name and environment as keyword arguments and returns a formatted deployment message.
 2. Write a function using *args that sums the estimated monthly costs of any number of cloud resources.
 3. Write a generator function that yields incident status updates one at a time, from a list of updates.
 4. Write a function that accepts another function as a callback and uses it to process a chat message, the way the Gradio example does.
-
----
 
 #### Module complete
 
@@ -2006,7 +1976,7 @@ You can now write functions, handle arguments four ways, and stream results with
 
 *Read and write files, work safely with with, and handle JSON, including real API responses.*
 
-Notebook: [`notebooks/09_file_handling.ipynb`](notebooks/09_file_handling.ipynb) &middot; solution: [`solutions/09_file_handling_solved.ipynb`](solutions/09_file_handling_solved.ipynb)
+Notebook: [`notebooks/09_file_handling.ipynb`](notebooks/09_file_handling.ipynb) &middot; answers: [`solutions/09_file_handling.md`](solutions/09_file_handling.md)
 
 ##### Before you start: the scratch folder
 
@@ -2287,14 +2257,10 @@ with open(servers_file) as f:
 
 #### Practice exercises
 
-These are the four exercises from the module's practice slide, word for word.
-
 1. Write a script that reads a list of server names from a text file, one per line, and prints each one.
 2. Save a dictionary of cloud resource tags to a JSON file, then read it back and print one of the tag values.
 3. Append a new incident summary line to a running incident log file each time the script runs.
 4. Save a short conversation history (a list of role/content dictionaries) to a .json file, then reload it and print the last message.
-
----
 
 #### Module complete
 
@@ -2307,7 +2273,7 @@ You can now read, write and manage files, and work with JSON data confidently.
 
 *Import the standard library, set up a virtual environment, and meet openai, langchain, and langgraph.*
 
-Notebook: [`notebooks/10_important_modules.ipynb`](notebooks/10_important_modules.ipynb) &middot; solution: [`solutions/10_important_modules_solved.ipynb`](solutions/10_important_modules_solved.ipynb)
+Notebook: [`notebooks/10_important_modules.ipynb`](notebooks/10_important_modules.ipynb) &middot; answers: [`solutions/10_important_modules.md`](solutions/10_important_modules.md)
 
 #### Slide 2 &middot; What Is a Module?
 
@@ -2602,14 +2568,10 @@ A quick map of what else is out there, for when you need it.
 
 #### Practice exercises
 
-These are the four exercises from the module's practice slide, word for word.
-
 1. Use the os module to list every file in the current deployment directory.
 2. Use dotenv to load a cloud provider's API key from a .env file, printing only whether it loaded, never the key itself.
 3. Use the time module to measure how long a fake health check function takes to run.
 4. Extend the tiny agent above with a second condition, so it also answers a simple math question like "what is 2 plus 2".
-
----
 
 #### Module complete
 
@@ -2622,7 +2584,7 @@ You can now import modules, manage secrets, and build with real AI packages. Exe
 
 *The tools that round out your Python toolkit for AI engineering work.*
 
-Notebook: [`notebooks/11_advanced_python.ipynb`](notebooks/11_advanced_python.ipynb) &middot; solution: [`solutions/11_advanced_python_solved.ipynb`](solutions/11_advanced_python_solved.ipynb)
+Notebook: [`notebooks/11_advanced_python.ipynb`](notebooks/11_advanced_python.ipynb) &middot; answers: [`solutions/11_advanced_python.md`](solutions/11_advanced_python.md)
 
 ##### Before you start: check Pydantic is available
 
@@ -2841,8 +2803,6 @@ to finish, then moves to the next. Asynchronous code, written with `async` and
 `await`, lets a program start a slow task such as a network call and work on
 something else while it waits, instead of sitting idle.
 
-> **Heads up.** **In a script** you start the whole thing with `asyncio.run(main())`. **In a notebook** there is already an event loop running, so `asyncio.run()` raises an error. Use a bare `await main()` instead, as the cells below do. This catches almost everyone out once.
-
 ```python
 import asyncio
 
@@ -2894,14 +2854,10 @@ print(f"\nthree calls finished in {elapsed:.2f}s, not {3 * 0.5:.2f}s")
 
 #### Practice exercises
 
-These are the four exercises from the module's practice slide, word for word.
-
 1. Write a class that represents a Deployment with a status attribute and a method that marks it complete.
 2. Write a Pydantic model that validates a cloud resource request with a name, a region, and a size.
 3. Write a decorator that logs how long any function takes, and use it on a fake run_healthcheck function.
 4. Write an async function that calls three model prompts concurrently using asyncio.gather, and print all three results.
-
----
 
 #### Module complete
 

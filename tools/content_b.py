@@ -1,6 +1,6 @@
 """Modules 5 to 8, following the slide decks section by section."""
 
-from nbcore import header, md, slide, code, todo, turn, lab, practice, heads_up
+from nbcore import header, md, only_nb, slide, code, todo, turn, lab, practice, heads_up
 
 # ---------------------------------------------------------------- Module 5
 
