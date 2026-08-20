@@ -1,19 +1,21 @@
-# Core tooling for running the lab notebooks
-jupyterlab>=4.0
-notebook>=7.0
-ipykernel>=6.0
+# Utrains Python Fundamentals Lab
+#
+# Everything needed to run all eleven notebooks from top to bottom.
+# Install with:   uv pip install -r requirements.txt
 
-# Used in Module 11
+# --- Jupyter itself ---------------------------------------------------
+jupyterlab>=4.0          # the notebook interface
+notebook>=7.0            # classic notebook interface, optional but handy
+ipykernel>=6.29          # lets this environment appear as a Jupyter kernel
+
+# --- Imported by the notebooks ----------------------------------------
+# Modules 1 to 10 import only the standard library: json, os, time,
+# datetime, math, pathlib, asyncio, dataclasses. Nothing to install.
+#
+# Module 11 imports pydantic. That is the only third party import in the
+# whole course.
 pydantic>=2.0
 
-# Used by tools/build.py to regenerate and verify the notebooks
+# --- Used by tools/build.py to regenerate and verify the notebooks ----
 nbformat>=5.9
 nbclient>=0.9
-
-# Discussed in Module 10. Uncomment when you are ready to call a real API,
-# and put your key in a .env file, never in the notebook.
-# openai>=1.0
-# langchain>=0.2
-# langchain-openai>=0.1
-# langgraph>=0.2
-# python-dotenv>=1.0

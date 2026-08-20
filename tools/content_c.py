@@ -1,6 +1,10 @@
-"""Modules 9 to 11: files and JSON, important modules, advanced Python."""
+"""Modules 9 to 11.
 
-from nbcore import header, md, code, todo, turn, lab, practice
+Modules 9 and 10 follow their slide decks section by section. Module 11 has no
+deck, so it follows the course reference guide's section order instead.
+"""
+
+from nbcore import header, md, slide, code, todo, turn, lab, practice, heads_up
 
 # ---------------------------------------------------------------- Module 9
 
@@ -8,23 +12,26 @@ M9 = [
     header(
         9,
         "File Handling",
+        "Read and write files, work safely with with, and handle JSON, including real API responses.",
         [
-            "Open a file in the right mode for what you are about to do",
+            "Pick the right file mode for what you are about to do",
+            "Read a whole file, one line, or every line as a list",
             "Prefer with open(...) so files always get closed",
-            "Read and write JSON, the format every API speaks",
+            "Turn Python data into JSON and back, as a string and as a file",
             "Locate a config file on disk with pathlib",
         ],
-        "Part 5 of the course: Working with the Outside World.",
+        "It follows the Module 9 slide deck, slide by slide.",
+        "Modules 1 to 8. `import` appears throughout because `os`, `json` and "
+        "`pathlib` need it; the deck flags this too, and Module 10 explains "
+        "`import` properly.",
     ),
     md(
         """
-File handling lets your program read and write data outside of memory, so it
-survives after the script finishes running.
-
-## Setting up a scratch folder
+### Before you start: the scratch folder
 
 Everything in this notebook writes into a `scratch/` folder next to it, so
-nothing else on your machine is touched. Run this cell first.
+nothing else on your machine is touched. `scratch/` is in `.gitignore`, so none
+of it will end up in a commit. Run this cell first.
 """
     ),
     code(
@@ -37,22 +44,56 @@ WORK.mkdir(exist_ok=True)
 print("writing files into:", WORK.resolve())
 """
     ),
-    md(
+    slide(
+        2,
+        "What Is File Handling?",
         """
-## File modes
+File handling lets your program read and write data outside of memory, so it
+survives after the script finishes running.
 
-You choose a mode when you open a file, which controls what you may do with it.
+**Two verbs, one function.** `open()` handles both reading and writing. What it
+does depends entirely on the mode you pass it.
+""",
+    ),
+    code(
+        """
+# write something to disk
+file = open(WORK / "notes.txt", "w")
+file.write("Meeting at 3pm")
+file.close()
 
-- `"r"` read, and the default
-- `"w"` write, and **overwrites** anything already there
-- `"a"` append, adding to the end
-- `"x"` create, and fails if the file already exists
-- `"rb"` and `"wb"` the same as r and w, but for binary data such as images
-
-## Opening, writing and reading
-
-The long form uses `open()` and `close()` as a pair.
+# read it back later, even after the program restarts
+file = open(WORK / "notes.txt", "r")
+print(file.read())
+file.close()
 """
+    ),
+    slide(
+        3,
+        "File Modes",
+        """
+You choose a mode when you open a file, which controls what you are allowed to
+do with it.
+
+| Mode | Meaning |
+|---|---|
+| `"r"` | Read. The default mode. |
+| `"w"` | Write. **Overwrites** anything already there. |
+| `"a"` | Append. Adds new content to the end. |
+| `"x"` | Create. Fails if the file already exists. |
+| `"rb"` / `"wb"` | Same as r and w, for binary data. |
+""",
+    ),
+    slide(
+        4,
+        "Opening, Writing, and Reading",
+        """
+Write to a file, then open it again separately to read it back.
+
+**Do not forget `close()`.** Skipping it can leave a file locked or lose
+unsaved data. The `with` statement, coming up shortly, removes this risk
+entirely.
+""",
     ),
     code(
         """
@@ -66,57 +107,77 @@ print(content)
 file.close()
 """
     ),
-    md(
+    slide(
+        5,
+        "Reading Line by Line",
         """
-## The with statement
-
-Opening a file with `with` closes it for you automatically, even if an error
-happens partway through. This is the pattern you should reach for by default.
-
-> If you forget to close a file it can stay locked or lose unsaved data. `with`
-> removes that risk entirely.
-"""
+You do not have to read a whole file at once. Pull one line, or every line as a
+list.
+""",
     ),
     code(
         """
+file = open(WORK / "sample.txt", "r")
+line = file.readline()          # reads a single line
+file.close()
+print("readline :", repr(line))
+
+file = open(WORK / "sample.txt", "r")
+lines = file.readlines()        # reads all lines into a list
+file.close()
+print("readlines:", lines)
+"""
+    ),
+    slide(
+        6,
+        "The with Statement",
+        """
+Opening a file with `with` automatically closes it for you, even if an error
+happens partway through. This is the pattern to reach for by default.
+
+**No `close()` needed.** `with` removes the risk of a locked file or lost data
+entirely, so prefer it over `open()` / `close()` pairs.
+""",
+    ),
+    code(
+        """
+with open(WORK / "sample.txt", "r") as file:
+    content = file.read()
+    print(content)
+
+# the file is already closed here, no need to call close()
+print("closed?", file.closed)
+"""
+    ),
+    slide(
+        7,
+        "Writing Multiple Lines and Appending",
+        """
+`writelines()` takes a list of strings and writes each one. Appending with
+`"a"` adds to the end without touching what is already there.
+
+**Remember the newline.** `writelines()` does not add `\\n` for you. Each
+string in the list needs its own.
+""",
+    ),
+    code(
+        """
+lines = ["Line 1\\n", "Line 2\\n", "Line 3\\n"]
+
 with open(WORK / "output.txt", "w") as file:
-    file.writelines(["Line 1\\n", "Line 2\\n", "Line 3\\n"])
+    file.writelines(lines)
 
 with open(WORK / "output.txt", "a") as file:
     file.write("This line will be appended.\\n")
 
 with open(WORK / "output.txt", "r") as file:
     print(file.read())
-
-# Reading one line at a time, or all lines into a list.
-with open(WORK / "output.txt") as file:
-    print("first line:", repr(file.readline()))
-
-with open(WORK / "output.txt") as file:
-    print("as a list :", file.readlines())
-"""
-    ),
-    md(
-        """
-## Reading a file that ships with the repo
-
-`data/servers.txt` sits alongside this notebook's folder. Reading a real file
-from disk is the same code, just a different path.
-"""
-    ),
-    code(
-        """
-servers_file = Path("..") / "data" / "servers.txt"
-
-with open(servers_file) as f:
-    for line in f:
-        print("-", line.strip())
 """
     ),
     turn(
         1,
-        "Append a new incident summary to a running log file, then read the "
-        "whole log back. Pick the mode that adds without wiping the file.",
+        "Append an incident summary to a running log, then read the whole log "
+        "back. Pick the mode that adds to the end rather than wiping the file.",
     ),
     todo(
         """
@@ -126,6 +187,7 @@ log_path = WORK / "incidents.log"
 with open(log_path, ____) as f:
     f.write("INC-4412 database connection failures resolved\\n")
 
+# TODO: choose the mode that reads.
 with open(log_path, ____) as f:
     print(f.read())
 """,
@@ -140,16 +202,45 @@ with open(log_path, "r") as f:
 """,
     ),
     md(
+        "Run that cell two or three times. The log grows each time, which is "
+        "exactly what append mode is for. Change the mode to `\"w\"`, run it "
+        "again, and watch the earlier lines disappear."
+    ),
+    slide(
+        8,
+        "Working with Binary Files",
         """
-Run that cell two or three times. The log grows each time, which is exactly
-what append mode is for. Change the mode to `"w"` and run it again to watch the
-earlier lines disappear.
+Images and other non-text files need `"rb"` and `"wb"`, the binary versions of
+read and write mode. Binary content comes back as bytes rather than text.
+""",
+    ),
+    code(
+        """
+# Make a small binary file so there is something real to copy.
+with open(WORK / "image.jpg", "wb") as f:
+    f.write(bytes(range(40)))
 
-## Checking and deleting files
+with open(WORK / "image.jpg", "rb") as file:
+    data = file.read()
+    print("Binary content:", data[:20])
 
-Checking whether a file exists and deleting one both live in the `os` module,
-which ships with Python.
+with open(WORK / "copy.jpg", "wb") as new_file:
+    new_file.write(data)
+
+print("copy written, same size:", (WORK / "copy.jpg").stat().st_size == len(data))
 """
+    ),
+    slide(
+        9,
+        "Checking and Deleting Files",
+        """
+Checking whether a file exists and deleting one both live in a module called
+`os`, which ships with Python.
+
+**First time seeing `import`?** Module 10 explains it in full. The short
+version: it brings in code someone else already wrote, used with a dot, like
+`os.path.exists()`.
+""",
     ),
     code(
         """
@@ -159,21 +250,23 @@ target = WORK / "sample.txt"
 
 if os.path.exists(target):
     print("File exists")
-    os.remove(target)
-    print("and now it does not:", os.path.exists(target))
 else:
     print("File not found")
+
+os.remove(target)
+print("after remove, exists?", os.path.exists(target))
 """
     ),
-    md(
+    slide(
+        10,
+        "Working with JSON",
         """
-## Working with JSON
+JSON is a text format almost every API uses to send and receive data. It maps
+directly onto a Python dictionary.
 
-JSON is a text format almost every API uses. It maps directly onto a Python
-dictionary. `json.dumps` turns a Python object into a JSON **string**, and
-`json.loads` turns a JSON string back into a Python object. The `s` stands for
-string; without it, `json.dump` and `json.load` work on **files** instead.
-"""
+**Two functions to know.** `json.dumps` turns a Python object into a JSON
+string. `json.loads` turns a JSON string back into a Python object.
+""",
     ),
     code(
         """
@@ -182,17 +275,25 @@ import json
 person = {"name": "Alice", "age": 25}
 
 as_text = json.dumps(person)
-print(as_text, type(as_text))
+print(as_text)
+print(type(as_text))
 
 back_to_dict = json.loads(as_text)
-print(back_to_dict["name"], type(back_to_dict))
+print(back_to_dict["name"])
+print(type(back_to_dict))
 """
     ),
-    md(
+    slide(
+        11,
+        "Parsing a Real JSON Response",
         """
-A real model API response arrives as JSON text over the network. Parsing it is
-the same skill applied to something you did not write yourself.
-"""
+A model API response arrives as JSON text over the network. Parsing it is the
+same skill applied to something you did not write yourself.
+
+**Follow the brackets.** `data["content"][0]["text"]` is a dictionary, then a
+list, then a dictionary again, one step at a time. That is exactly the nested
+structure from Module 6.
+""",
     ),
     code(
         """
@@ -209,6 +310,17 @@ data = json.loads(raw_response)
 print(data["content"][0]["text"])
 print(data["usage"]["output_tokens"])
 """
+    ),
+    slide(
+        12,
+        "Reading and Writing JSON Files",
+        """
+`json.load` and `json.dump` work the same way, but read from and write directly
+to a file, so you never build the string by hand.
+
+**dump vs dumps.** `dump` writes to a file object. `dumps`, with an `s`,
+returns a string. The same pattern applies to `load` and `loads`.
+""",
     ),
     code(
         """
@@ -230,7 +342,7 @@ print("turns saved:", len(loaded))
     turn(
         2,
         "Save a dictionary of resource tags to a JSON file and read one value "
-        "back. Note carefully which of the four json functions each step needs.",
+        "back. Watch carefully which of the four json functions each step needs.",
     ),
     todo(
         """
@@ -257,14 +369,16 @@ with open(WORK / "tags.json", "r") as f:
 print(restored["owner"])
 """,
     ),
-    md(
+    slide(
+        13,
+        "Finding a Config File with pathlib",
         """
-## Finding a .env file with pathlib
+`pathlib` is another built in module for working with file paths. This pattern
+searches a few likely folders for a configuration file.
 
-`pathlib` is another built in module, this time for working with paths. This
-pattern searches a few likely folders for a config file, which is exactly how
-AI projects locate API keys stored outside the code.
-"""
+**AI framing.** This is exactly how AI projects locate API keys stored outside
+the code, in a `.env` file.
+""",
     ),
     code(
         """
@@ -273,13 +387,34 @@ from pathlib import Path
 here = Path.cwd().resolve()
 loaded_from = None
 
-for candidate in [here / ".env", here.parent / ".env", here.parent.parent / ".env"]:
+for candidate in [
+    here / ".env",
+    here.parent / ".env",
+    here.parent.parent / ".env",
+]:
     if candidate.is_file():
         loaded_from = candidate
         break
 
 print("searched from:", here)
-print("would load .env from:", loaded_from)
+print("Would load .env from:", loaded_from)
+"""
+    ),
+    md(
+        """
+### Reading a file that ships with this repo
+
+`data/servers.txt` sits one folder up from this notebook, with one server name
+per line. Reading a real file is the same code, just a different path.
+"""
+    ),
+    code(
+        """
+servers_file = Path("..") / "data" / "servers.txt"
+
+with open(servers_file) as f:
+    for line in f:
+        print("-", line.strip())
 """
     ),
     lab(
@@ -288,16 +423,16 @@ print("would load .env from:", loaded_from)
 Read `../data/servers.txt`, which holds one server name per line.
 
 Turn it into a list of dictionaries, where each entry has a `name`, a `region`
-derived from the part of the name after the last hyphen, and a `status` of
-`"unknown"`.
+taken from the part of the name after the first hyphen that follows the number,
+and a `status` of `"unknown"`.
 
 Save that list to `scratch/inventory.json` with an indent of 2, then read it
-back from disk into a fresh variable and print how many servers you recovered
+back from disk into a fresh variable, and print how many servers you recovered
 and the name of the last one.
 
-Finish by appending a single audit line to `scratch/audit.log` recording how
-many servers were processed. Run the whole lab twice and confirm the audit log
-has two lines while the inventory JSON still has the right count.
+Finish by appending one audit line to `scratch/audit.log` recording how many
+servers were processed. Run the whole lab twice: the audit log should have two
+lines while the inventory JSON still holds the right count.
 """,
         [
             "The text file is read with a with statement, not open/close",
@@ -317,7 +452,8 @@ has two lines while the inventory JSON still has the right count.
             "Save a dictionary of cloud resource tags to a JSON file, then read it back and print one of the tag values.",
             "Append a new incident summary line to a running incident log file each time the script runs.",
             "Save a short conversation history (a list of role/content dictionaries) to a .json file, then reload it and print the last message.",
-        ]
+        ],
+        "You can now read, write and manage files, and work with JSON data confidently.",
     ),
 ]
 
@@ -327,31 +463,53 @@ M10 = [
     header(
         10,
         "Important Modules",
+        "Import the standard library, set up a virtual environment, and meet openai, langchain, and langgraph.",
         [
-            "Import a module three different ways and know when to use each",
-            "Use time, os, datetime and math from the standard library",
-            "Separate config from secrets, and keep API keys out of your code",
-            "Recognise what openai, langchain and langgraph each do",
+            "Say what a module is and what import actually does",
+            "Use all three import patterns",
+            "Measure time and read the operating system with time and os",
+            "Keep secrets out of your code and out of source control",
+            "Say what openai, langchain and langgraph each do, and when to pick which",
         ],
-        "Part 5 of the course: Working with the Outside World.",
+        "It follows the Module 10 slide deck, slide by slide.",
+        "Modules 1 to 9. The AI package slides need network access and an API "
+        "key, so their code is shown as reference and paired with a standard "
+        "library stand-in you can actually run.",
     ),
-    md(
+    slide(
+        2,
+        "What Is a Module?",
         """
-A module is a file of pre-written Python code that you bring into your own
-program with `import`. This is where most of Python's real power comes from:
-you rarely have to write something from scratch.
+A module is a file of pre-written Python code you bring into your own program
+with `import`. This is where most of Python's real power comes from: you rarely
+have to write something from scratch.
 
-## What import actually does
+**Standard library vs third party.** `time` ships with Python. Something like
+`ollama` does not, so you install it first.
+""",
+    ),
+    code(
+        """
+import time            # standard library, comes with Python
 
-`import` loads a module so its functions and variables become available in your
-file. Without importing it first, Python has no idea the name exists.
+# import ollama       # third party, pip install ollama first
 
-Three patterns:
-
-- `import module_name` gives you `module_name.something`
-- `import module_name as alias` lets you use a shorter name
-- `from module_name import something` brings in just one name directly
+print("time module loaded:", time.__name__)
 """
+    ),
+    slide(
+        3,
+        "Import Patterns",
+        """
+`import` loads a module so its functions and variables become available. There
+are a few common styles.
+
+| Pattern | Gives you |
+|---|---|
+| `import module_name` | `module_name.something` |
+| `import module_name as alias` | a shorter name |
+| `from module_name import something` | just one piece, directly |
+""",
     ),
     code(
         """
@@ -362,7 +520,15 @@ print(dt.date.today())
 print(sqrt(16))
 """
     ),
-    md("## Measuring time"),
+    slide(
+        4,
+        "Measuring Time",
+        """
+The `time` module is the standard way to measure how long something takes to
+run. `time.time()` gives you a number of seconds; take one from another to get
+the elapsed time.
+""",
+    ),
     code(
         """
 import time
@@ -372,23 +538,15 @@ time.sleep(0.3)
 print(f"Waited {time.time() - t0:.1f}s")
 """
     ),
-    md("## Working with the operating system"),
-    code(
-        """
-import os
-
-print("current directory:", os.getcwd())
-print("files here:", sorted(os.listdir("."))[:10])
-"""
-    ),
     turn(
         1,
-        "Measure how long a fake health check takes, and print the answer to "
-        "two decimal places. Two blanks: the import and the timing call.",
+        "Measure how long a fake health check takes and print the answer to two "
+        "decimal places. Two ideas here: the import statement, and the call "
+        "that reads the clock.",
     ),
     todo(
         """
-# TODO: bring in the module that can pause and measure, then use it twice.
+# TODO: bring in the module that can pause and read the clock.
 ____ time
 
 
@@ -397,6 +555,7 @@ def run_healthcheck():
     return "healthy"
 
 
+# TODO: read the clock before and after.
 start = time.____()
 status = run_healthcheck()
 elapsed = time.____() - start
@@ -419,13 +578,27 @@ elapsed = time.time() - start
 print(f"health check returned {status} in {elapsed:.2f}s")
 """,
     ),
-    md(
+    slide(
+        5,
+        "Working with the Operating System",
         """
-## Config values versus secrets
+The `os` module reads information about the machine your script is running on.
+""",
+    ),
+    code(
+        """
+import os
 
-**Config** is safe to keep in your code, such as which model to use. **Secrets**
-such as API keys should never be committed to source control. Keep them in a
-`.env` file and load them with `dotenv`.
+print(os.getcwd())                      # current directory
+print(sorted(os.listdir("."))[:10])     # files here
+"""
+    ),
+    slide(
+        6,
+        "Config Values versus Secrets",
+        """
+Config is safe to keep in your code. Secrets, like API keys, should never be
+committed to source control. Load them from a `.env` file instead.
 
 ```python
 from dotenv import load_dotenv
@@ -433,22 +606,22 @@ import os
 
 load_dotenv()
 
-MODEL = "claude-sonnet-4-6"                      # config, fine to commit
-api_key = os.environ.get("ANTHROPIC_API_KEY")    # secret, never commit
+MODEL = "claude-sonnet-4-6"                    # config, fine to commit
+api_key = os.environ.get("ANTHROPIC_API_KEY")  # secret, never commit
 
-print("API key loaded:", bool(api_key))          # never print the raw key
+print("API key loaded:", bool(api_key))
 ```
 
-The `.env` file itself, kept out of version control by `.gitignore`:
+The `.env` file, kept out of version control by `.gitignore`:
 
 ```
 ANTHROPIC_API_KEY=sk-...
 ```
 
-The cell below does the same job using only the standard library, so it runs
-here without installing anything. Notice it prints whether the key exists, and
-never the key itself.
-"""
+**Never print the raw key, even in a demo.** The cell below does the same job
+with only the standard library, so it runs without installing anything, and it
+prints whether the key exists rather than the key itself.
+""",
     ),
     code(
         """
@@ -461,20 +634,37 @@ print("model:", MODEL)
 print("API key loaded:", bool(api_key))
 """
     ),
-    md(
+    slide(
+        7,
+        "API, SDK, and Client, Defined",
         """
-## Setting up a virtual environment
+Three words you will see constantly once you start calling AI models.
 
-Everything so far has needed only the standard library, which ships with
-Python. The packages below do not.
+- **API** &mdash; the remote interface your program talks to over the network
+- **SDK** &mdash; the library you import to talk to that API without writing raw
+  HTTP calls, such as `anthropic` or `openai`
+- **client** &mdash; the object the SDK gives you to actually make calls, for
+  example `client = Anthropic()`
 
-A virtual environment is a folder holding its own copy of installed packages,
-separate from everything else on your machine. Without one, every project
-shares the same packages, and installing one project's dependencies can quietly
-break another's.
+```python
+# from anthropic import Anthropic
+# client = Anthropic()
+# r = client.messages.create(model=..., messages=...)
+```
+""",
+    ),
+    slide(
+        8,
+        "Setting Up a Virtual Environment",
+        """
+The packages coming up do not ship with Python. Before installing anything,
+isolate this project's packages from the rest of your system.
+
+**One environment per project.** This keeps one project's packages from
+colliding with another's, and lets you delete `.venv` and start clean any time.
 
 ```bash
-uv venv                        # creates a .venv folder here
+uv venv                        # creates .venv here
 
 source .venv/bin/activate      # Linux / macOS
 .venv\\Scripts\\activate         # Windows
@@ -484,24 +674,19 @@ uv pip install openai langchain langgraph
 deactivate                     # leave when you are done
 ```
 
-> Create a fresh virtual environment per project. You can delete the `.venv`
-> folder and start clean without touching anything else on your machine.
+If you followed this repo's README, you already did exactly this to get the
+notebook running. The `README.md` has the full walkthrough including how to
+point Jupyter at the environment.
+""",
+    ),
+    slide(
+        9,
+        "Popular AI Packages: openai",
+        """
+The official SDK for calling OpenAI's models. A client object handles the
+network request, and you read the reply off the response object.
 
-## API, SDK and client, defined
-
-- **API** the remote interface your program talks to over the network
-- **SDK** the official library you import so you do not write raw HTTP calls,
-  such as `anthropic` or `openai`
-- **client** the object the SDK gives you to make calls, such as
-  `client = Anthropic()`
-
-## The three packages you will meet
-
-These need network access and an API key, so they are shown here as reference
-rather than run. The cell after them simulates the same shapes with plain
-Python, so you can see the structure without a key.
-
-**openai** &mdash; the official SDK for OpenAI models:
+Installed inside your venv with `uv pip install openai`.
 
 ```python
 from openai import OpenAI
@@ -509,25 +694,41 @@ from openai import OpenAI
 client = OpenAI()
 response = client.chat.completions.create(
     model="gpt-4o-mini",
-    messages=[{"role": "user", "content": "Say hello in one sentence."}],
+    messages=[{"role": "user", "content": "Say hello."}],
 )
 print(response.choices[0].message.content)
 ```
+""",
+    ),
+    slide(
+        10,
+        "Popular AI Packages: langchain",
+        """
+LangChain wraps different model providers behind a common interface, so the
+same code can call OpenAI, Anthropic or others with only the client changed.
 
-**langchain** &mdash; wraps different providers behind one interface:
+**Same shape, different provider.** Swap `ChatOpenAI` for a different
+provider's class and the rest of the code barely changes.
 
 ```python
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
 
 llm = ChatOpenAI(model="gpt-4o-mini")
-response = llm.invoke([HumanMessage(content="Say hello in one sentence.")])
+response = llm.invoke([HumanMessage(content="Say hello.")])
 print(response.content)
 ```
+""",
+    ),
+    slide(
+        11,
+        "Popular AI Packages: langgraph",
+        """
+LangGraph structures an AI program as a graph of steps, called **nodes**,
+connected by **edges**. Each node is a plain Python function.
 
-**langgraph** &mdash; structures a program as a graph of steps called nodes,
-connected by edges. Each node is a plain function that receives the current
-state and returns an update to it:
+**State flows through the graph.** Each node receives the current state and
+returns an update to it, one step at a time.
 
 ```python
 from langgraph.graph import StateGraph, END
@@ -542,15 +743,15 @@ graph.add_edge("greet", END)
 
 app = graph.compile()
 result = app.invoke({"name": "Alice"})
-print(result["message"])
+print(result["message"])       # Hello, Alice!
 ```
-"""
+
+The cell below is that same graph with nothing but the standard library. The
+point is the shape: a node is a function, and state flows through it.
+""",
     ),
     code(
         """
-# A stand-in for the graph above, using nothing but the standard library.
-# The point is the shape: a node is a function, state flows through it.
-
 def greet_node(state):
     return {"message": f"Hello, {state['name']}!"}
 
@@ -565,35 +766,62 @@ result = run_graph([greet_node], {"name": "Alice"})
 print(result["message"])
 """
     ),
-    md(
+    slide(
+        12,
+        "LangChain Agents vs LangGraph",
         """
-## LangChain agents compared with LangGraph
+Both can build an **agent**, a program that decides what to do rather than
+always running fixed steps. They hand you different amounts of control.
 
-Both can build an **agent**, an AI program that decides what to do rather than
-always running the same fixed steps. They hand you different amounts of
-control.
+**LangChain agents.** Faster to set up for a standard tool-calling loop. Hand
+it a model and tools, and it repeats until done.
 
-LangChain's agent tools give you a ready made loop: hand it a model and a list
-of tools and it repeatedly asks the model what to do next until it decides it
-is done. Faster to set up for a standard pattern.
+**LangGraph.** More code to wire up, but you see and control every step. Add
+cycles, or pause for human approval.
 
-LangGraph gives you the loop itself instead of hiding it. You define the nodes,
-the edges and the state, which means you control exactly when to loop, branch,
-pause for a human, or stop. More code to wire up, but every step is visible.
+**No wrong choice.** Reach for LangChain's agent tools for a quick, standard
+loop. Reach for LangGraph when you need to see and control the steps yourself.
+Complex or multi-agent workflows tend to move toward LangGraph as they grow.
+""",
+    ),
+    slide(
+        13,
+        "A LangChain Agent in Practice",
+        """
+This is the newer, tool-calling style of LangChain agent: hand it a model, a
+list of tools and a prompt.
 
-Complex or multi-agent workflows tend to move toward LangGraph as they grow,
-since a single hidden loop stops being enough control.
+**`@tool` marks a function** as something the model is allowed to call. The
+docstring tells the model what the tool does.
 
-> There is no wrong choice. Reach for LangChain's agent tools for a quick
-> standard tool-calling loop. Reach for LangGraph when you need to see and
-> control the steps yourself.
+```python
+from langchain.agents import create_tool_calling_agent, AgentExecutor
+from langchain_core.tools import tool
+from langchain_core.prompts import ChatPromptTemplate
 
-## A tiny agent
+@tool
+def get_weather(city: str) -> str:
+    \"\"\"Look up the weather for a city.\"\"\"
+    return f"It is sunny in {city}."
 
-Underneath, every agent does the same three things: read the state, decide what
-to do, and return an update. The `if` below stands in for a model deciding
-which tool to call.
-"""
+agent = create_tool_calling_agent(llm, [get_weather], prompt)
+executor = AgentExecutor(agent=agent, tools=[get_weather])
+result = executor.invoke({"input": "Weather in Boston?"})
+print(result["output"])
+```
+""",
+    ),
+    slide(
+        14,
+        "Building a Tiny Agent with LangGraph",
+        """
+A small agent, built with the same `StateGraph` pattern, that answers weather
+questions and declines anything else.
+
+**This is what every agent does.** Read the state, decide what to do, return an
+update. The `if` / `else` here stands in for a model deciding which tool to
+call.
+""",
     ),
     code(
         """
@@ -607,7 +835,7 @@ def agent_node(state):
     if "weather" in question.lower():
         answer = get_weather("Boston")
     else:
-        answer = "I can only answer weather questions right now."
+        answer = "I can only answer weather questions."
     return {"answer": answer}
 
 
@@ -617,8 +845,8 @@ print(agent_node({"question": "Who won the game?"})["answer"])
     ),
     turn(
         2,
-        "Extend the tiny agent with a second condition so it can also answer "
-        "a simple addition question, and fall through to the refusal otherwise.",
+        "Extend the tiny agent with a second condition so it also answers a "
+        "simple addition question, and still declines everything else.",
     ),
     todo(
         """
@@ -627,7 +855,7 @@ def agent_node(state):
 
     if "weather" in question:
         answer = get_weather("Boston")
-    # TODO: add a branch that catches a maths question and answers it.
+    # TODO: add a branch that catches a maths question, then a catch-all.
     ____ "plus" ____ question:
         answer = "That is 4."
     ____:
@@ -657,10 +885,23 @@ for q in ["What is the weather like?", "what is 2 plus 2", "Who won the game?"]:
     print(q, "->", agent_node({"question": q})["answer"])
 """,
     ),
+    slide(
+        15,
+        "Other Useful Modules",
+        """
+A quick map of what else is out there, for when you need it.
+
+- **subprocess** &mdash; running shell commands from inside Python
+- **requests** &mdash; making HTTP calls to APIs
+- **Docker and Kubernetes** &mdash; container and orchestration helper patterns
+- **boto3 and Terraform** &mdash; cloud and infrastructure as code
+- **Git automation** &mdash; CI/CD pipeline integration
+""",
+    ),
     lab(
         "A timed, config-driven health reporter",
         """
-Write a small script inside this notebook that does four things.
+Write a small script in this notebook that does four things.
 
 Read a model name from an environment variable called `LAB_MODEL`, falling back
 to `"gpt-4o-mini"` when it is not set. Print the model, and separately print
@@ -669,8 +910,8 @@ value.
 
 Use `os.listdir` to count how many files sit in the current folder.
 
-Time a fake `run_healthcheck()` function that sleeps for a fraction of a second
-and returns a status, and print the elapsed time to two decimal places.
+Time a fake `run_healthcheck()` function that sleeps briefly and returns a
+status, and print the elapsed time to two decimal places.
 
 Stamp the report with today's date using `datetime`.
 
@@ -679,7 +920,7 @@ Print all of it as one tidy report block.
         [
             "The model comes from the environment with a fallback",
             "The key is reported as present or absent, never printed",
-            "os is used to count files in the folder",
+            "os is used to count the files in the folder",
             "time measures the health check, datetime stamps the report",
         ],
     ),
@@ -694,7 +935,9 @@ Print all of it as one tidy report block.
             "Use dotenv to load a cloud provider's API key from a .env file, printing only whether it loaded, never the key itself.",
             "Use the time module to measure how long a fake health check function takes to run.",
             "Extend the tiny agent above with a second condition, so it also answers a simple math question like \"what is 2 plus 2\".",
-        ]
+        ],
+        "You can now import modules, manage secrets, and build with real AI packages. "
+        "Exercise 2 needs `python-dotenv`, which is in `requirements-ai.txt`.",
     ),
 ]
 
@@ -704,21 +947,38 @@ M11 = [
     header(
         11,
         "Classes, Type Hints, Pydantic, Decorators and Async",
+        "The tools that round out your Python toolkit for AI engineering work.",
         [
             "Bundle data and behaviour together in a class, and read dotted SDK output",
             "Describe a shape with type hints and a dataclass",
             "Validate untrusted data with a Pydantic model",
-            "Wrap a function with a decorator, and run slow calls concurrently with async",
+            "Wrap a function with a decorator without changing its code",
+            "Run several slow calls at once with async and await",
         ],
-        "Part 6 of the course: Advanced Python for AI Engineering.",
+        "Module 11 is the one module with no slide deck, so this notebook "
+        "follows the course reference guide's section order instead. Sections "
+        "are numbered rather than labelled with a slide number.",
+        "Modules 1 to 10. This is the only notebook that needs a third party "
+        "package: **Pydantic**, which is in `requirements.txt`.",
     ),
     md(
         """
-This module covers the tools that round out your Python toolkit. Each section
-starts with the basic shape, then a slightly bigger example.
+### Before you start: check Pydantic is available
 
-## Classes and objects
+If this cell fails, your environment is missing Pydantic. Install it with
+`uv pip install -r requirements.txt`, then restart the kernel.
+"""
+    ),
+    code(
+        """
+import pydantic
 
+print("pydantic", pydantic.VERSION)
+"""
+    ),
+    md("## Section 1 &middot; Classes and objects"),
+    md(
+        """
 A class is a blueprint for a data type that bundles values and behaviour
 together. `__init__` sets up what a new object starts with, and `self` refers
 to the specific object being worked on.
@@ -799,13 +1059,14 @@ print(chunk.choices[0].delta.content)
     ),
     turn(
         1,
-        "Write a Deployment class that starts as pending and can be marked "
-        "complete. Fill in the constructor and the method.",
+        "Write a `Deployment` class that starts as pending and can be marked "
+        "complete. Fill in the constructor's name and the reference to the "
+        "object itself.",
     ),
     todo(
         """
 class Deployment:
-    # TODO: name the constructor, and store the two values on the object.
+    # TODO: name the constructor, and store both values on the object.
     def ____(self, service):
         ____.service = service
         ____.status = "pending"
@@ -817,6 +1078,7 @@ class Deployment:
 
 d = Deployment("api-gateway")
 print(d.service, "->", d.status)
+
 d.complete()
 print(d.service, "->", d.status)
 """,
@@ -832,14 +1094,14 @@ class Deployment:
 
 d = Deployment("api-gateway")
 print(d.service, "->", d.status)
+
 d.complete()
 print(d.service, "->", d.status)
 """,
     ),
+    md("## Section 2 &middot; Type hints and dataclasses"),
     md(
         """
-## Type hints and dataclasses
-
 A type hint is a note saying what type a variable or function expects. Python
 does not enforce it by itself, but your editor and several AI libraries read it
 and catch mistakes early.
@@ -873,18 +1135,14 @@ class WeatherLookup:
     unit: str = "celsius"
 
 
-m = Message(role="user", content="Hi there")
-call = WeatherLookup(city="Boston")
-
-print(m)
-print(call)
+print(Message(role="user", content="Hi there"))
+print(WeatherLookup(city="Boston"))
 print("a dataclass will NOT stop this:", Message(role=123, content=None))
 """
     ),
+    md("## Section 3 &middot; Pydantic models"),
     md(
         """
-## Pydantic models
-
 A dataclass describes a shape but will not stop you putting the wrong type in a
 field, as the last line above showed. **Pydantic** does the same job and
 validates every field automatically, raising a clear error the moment something
@@ -932,13 +1190,13 @@ except ValidationError as e:
     print(e)
 """
     ),
+    md("## Section 4 &middot; Decorators"),
     md(
         """
-## Decorators
-
 A decorator is a function that wraps another function to add behaviour, without
 changing the code inside that function. It is written as an `@` placed directly
-above a `def` line.
+above a `def` line. It builds on Module 8's idea that a function is just a
+value you can pass around.
 """
     ),
     code(
@@ -981,19 +1239,20 @@ def call_model(prompt):
 print(call_model("Summarize this document."))
 """
     ),
+    md("## Section 5 &middot; Async and await"),
     md(
         """
-## Async and await
-
 Everything so far has been **synchronous**: Python runs one line, waits for it
 to finish, then moves to the next. Asynchronous code, written with `async` and
 `await`, lets a program start a slow task such as a network call and work on
 something else while it waits, instead of sitting idle.
-
-> **In a script** you start the whole thing with `asyncio.run(main())`.
-> **In a notebook** there is already an event loop running, so `asyncio.run()`
-> raises an error. Use a bare `await main()` instead, as the cells below do.
 """
+    ),
+    heads_up(
+        "**In a script** you start the whole thing with `asyncio.run(main())`. "
+        "**In a notebook** there is already an event loop running, so "
+        "`asyncio.run()` raises an error. Use a bare `await main()` instead, as "
+        "the cells below do. This catches almost everyone out once."
     ),
     code(
         """
@@ -1116,11 +1375,11 @@ Define a Pydantic model `ChatTurn` with a `role` and a `content`, both strings.
 Prove it rejects a turn where `role` is a number.
 
 Write a `ChatClient` class that holds a model name and a list of `ChatTurn`
-objects. Give it an `async def ask(self, message)` method that sleeps for a
-fraction of a second to simulate the network, appends both the user turn and
-the assistant reply to its history, and returns the reply.
+objects. Give it an `async def ask(self, message)` method that sleeps briefly
+to simulate the network, appends both the user turn and the assistant reply to
+its history, and returns the reply.
 
-Decorate a `report()` method with a `@timed` decorator you write yourself, so
+Write your own `@timed` decorator and put it on a `report()` method, so
 printing the history also prints how long it took.
 
 Finally, use `asyncio.gather` to ask three questions concurrently, then print
@@ -1145,6 +1404,8 @@ the full history and confirm it holds six turns.
             "Write a Pydantic model that validates a cloud resource request with a name, a region, and a size.",
             "Write a decorator that logs how long any function takes, and use it on a fake run_healthcheck function.",
             "Write an async function that calls three model prompts concurrently using asyncio.gather, and print all three results.",
-        ]
+        ],
+        "That is the whole course. You can now read and write Python confidently "
+        "enough to work with real AI SDKs.",
     ),
 ]

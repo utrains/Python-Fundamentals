@@ -1,0 +1,17 @@
+# Optional extras for Module 10.
+#
+# Module 10 shows openai, langchain and langgraph as reference code in
+# markdown, and gives you a standard library stand-in you can run without
+# a key. Nothing in the notebooks imports these, so you do not need them
+# to finish the course.
+#
+# Install them only when you are ready to call a real API and have put a
+# key in a .env file:
+#
+#     uv pip install -r requirements-ai.txt
+
+python-dotenv>=1.0       # load_dotenv(), used in the Module 10 secrets slide
+openai>=1.0              # Module 10, slide 9
+langchain>=0.2           # Module 10, slide 10
+langchain-openai>=0.1    # Module 10, slide 10
+langgraph>=0.2           # Module 10, slides 11 and 14

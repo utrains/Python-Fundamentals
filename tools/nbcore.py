@@ -1,8 +1,13 @@
 """Helpers for building the Utrains Python Fundamentals lab notebooks.
 
-Every notebook is described as a plain list of cells. Two cell kinds matter:
+Each notebook follows its module's slide deck in order, so an instructor can
+teach from the deck and scroll the notebook in step with it. Section headings
+carry the slide number and the slide title.
+
+Cell kinds:
 
     md(text)                 a markdown cell
+    slide(n, title, body)    a markdown cell headed "Slide n - title"
     code(src)                a code cell that runs cleanly as written
     todo(src, solution)      a code cell with deliberate blanks for the student
 
@@ -19,6 +24,10 @@ BLANK = "____"
 
 def md(text):
     return ("md", text.strip("\n"), None)
+
+
+def slide(n, title, body):
+    return md(f"## Slide {n} &middot; {title}\n\n{body.strip()}")
 
 
 def code(src):
@@ -58,7 +67,7 @@ def build(cells, solved):
 
 # Reusable markdown blocks -------------------------------------------------
 
-def header(number, title, objectives, covers):
+def header(number, title, subtitle, objectives, deck_note, known):
     bullets = "\n".join(f"- {o}" for o in objectives)
     return md(
         f"""
@@ -66,23 +75,28 @@ def header(number, title, objectives, covers):
 
 **Utrains Python Fundamentals** &middot; lab notebook
 
-{covers}
+*{subtitle}*
 
 ## What you will be able to do by the end
 
 {bullets}
 
-## How to use this notebook
+## How this notebook is organised
 
-Run every cell in order with **Shift + Enter**. Read the markdown before each
-block, then run the code and compare what you see against what you expected.
+{deck_note}
 
-Two cells in this notebook are marked **Your turn**. They contain `____` where
-a piece of the syntax is missing. They will fail if you run them as they are.
-That is deliberate. Replace each `____`, then run the cell until it succeeds.
+Run every cell in order with **Shift + Enter**. Read the note above each block,
+then run the code and compare what you see with what you expected.
 
-The last section is the **Lab**. It is a short task with no code written for
-you, so you have to put the module together yourself.
+Two cells are marked **Your turn**. They contain `____` where a piece of the
+syntax is missing, so they will fail if you run them as they are. That is
+deliberate. Replace each `____`, then run the cell until it succeeds.
+
+The last section is the **Lab**: a short task with no code written for you.
+
+## What this notebook assumes
+
+{known}
 """
     )
 
@@ -120,7 +134,7 @@ Write your answer in the cell below. There is no starter code on purpose.
     )
 
 
-def practice(exercises):
+def practice(exercises, closing):
     items = "\n".join(f"{i}. {e}" for i, e in enumerate(exercises, 1))
     return md(
         f"""
@@ -128,13 +142,20 @@ def practice(exercises):
 
 ## Practice exercises
 
-Work through these on your own after the lab. They come straight from the
-course reference guide, so the wording matches what you will see there.
+These are the four exercises from the module's practice slide, word for word.
 
 {items}
 
 ---
 
+## Module complete
+
+{closing}
+
 *Utrains &middot; support@utrains.org &middot; https://utrains.org*
 """
     )
+
+
+def heads_up(text):
+    return md(f"> **Heads up.** {text}")

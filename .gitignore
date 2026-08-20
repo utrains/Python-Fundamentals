@@ -21,3 +21,6 @@ __pycache__/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Jupyter kernel spec created by the setup steps
+.python-version
