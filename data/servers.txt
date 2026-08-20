@@ -1,0 +1,6 @@
+web-01-us-east-1
+web-02-us-east-1
+api-01-eu-west-1
+db-01-eu-west-1
+cache-01-ap-south-1
+worker-01-ap-south-1

@@ -1,0 +1,19 @@
+# Core tooling for running the lab notebooks
+jupyterlab>=4.0
+notebook>=7.0
+ipykernel>=6.0
+
+# Used in Module 11
+pydantic>=2.0
+
+# Used by tools/build.py to regenerate and verify the notebooks
+nbformat>=5.9
+nbclient>=0.9
+
+# Discussed in Module 10. Uncomment when you are ready to call a real API,
+# and put your key in a .env file, never in the notebook.
+# openai>=1.0
+# langchain>=0.2
+# langchain-openai>=0.1
+# langgraph>=0.2
+# python-dotenv>=1.0

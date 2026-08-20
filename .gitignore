@@ -1,0 +1,23 @@
+# Environments
+.venv/
+venv/
+env/
+
+# Secrets, never commit
+.env
+*.pem
+
+# Notebook noise
+.ipynb_checkpoints/
+**/scratch/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
