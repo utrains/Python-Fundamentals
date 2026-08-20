@@ -115,7 +115,35 @@ Stamp the report with today's date using `datetime`.
 
 Print all of it as one tidy report block.
 
-There is no single right answer to a lab, so none is given here. Check your work against the checklist in the notebook. If it ticks every box and runs without an error, it is right.
+**One way to do it.** A lab is open ended, so this is not the only right answer. Compare it against yours once you have had a go, and check your own version against the tick list in the notebook.
+
+```python
+import os
+import time
+import datetime as dt
+
+MODEL = os.environ.get("LAB_MODEL", "gpt-4o-mini")
+api_key = os.environ.get("LAB_API_KEY")
+
+
+def run_healthcheck():
+    time.sleep(0.2)
+    return "healthy"
+
+
+start = time.time()
+status = run_healthcheck()
+elapsed = time.time() - start
+
+file_count = len(os.listdir("."))
+
+print("=== health report ===")
+print("date         :", dt.date.today())
+print("model        :", MODEL)
+print("API key set  :", bool(api_key))     # never the key itself
+print("files here   :", file_count)
+print(f"health check : {status} in {elapsed:.2f}s")
+```
 
 ---
 

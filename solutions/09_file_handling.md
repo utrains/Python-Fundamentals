@@ -89,7 +89,48 @@ Finish by appending one audit line to `scratch/audit.log` recording how many
 servers were processed. Run the whole lab twice: the audit log should have two
 lines while the inventory JSON still holds the right count.
 
-There is no single right answer to a lab, so none is given here. Check your work against the checklist in the notebook. If it ticks every box and runs without an error, it is right.
+**One way to do it.** A lab is open ended, so this is not the only right answer. Compare it against yours once you have had a go, and check your own version against the tick list in the notebook.
+
+```python
+import json
+from pathlib import Path
+
+WORK = Path("scratch")
+WORK.mkdir(exist_ok=True)
+
+servers_file = Path("..") / "data" / "servers.txt"
+
+inventory = []
+
+with open(servers_file) as f:
+    for line in f:
+        name = line.strip()
+        if not name:
+            continue
+        parts = name.split("-")
+        inventory.append({
+            "name": name,
+            "region": "-".join(parts[2:]),
+            "status": "unknown",
+        })
+
+with open(WORK / "inventory.json", "w") as f:
+    json.dump(inventory, f, indent=2)
+
+with open(WORK / "inventory.json") as f:
+    restored = json.load(f)
+
+print("servers recovered:", len(restored))
+print("last one         :", restored[-1]["name"], "in", restored[-1]["region"])
+
+with open(WORK / "audit.log", "a") as f:
+    f.write(f"processed {len(restored)} servers\n")
+
+with open(WORK / "audit.log") as f:
+    print()
+    print("audit log now holds", len(f.readlines()), "line(s)")
+    print("run the cell again and that number goes up")
+```
 
 ---
 

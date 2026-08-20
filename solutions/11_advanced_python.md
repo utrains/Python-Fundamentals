@@ -130,7 +130,70 @@ printing the history also prints how long it took.
 Finally, use `asyncio.gather` to ask three questions concurrently, then print
 the full history and confirm it holds six turns.
 
-There is no single right answer to a lab, so none is given here. Check your work against the checklist in the notebook. If it ticks every box and runs without an error, it is right.
+**One way to do it.** A lab is open ended, so this is not the only right answer. Compare it against yours once you have had a go, and check your own version against the tick list in the notebook.
+
+```python
+import asyncio
+import time
+
+from pydantic import BaseModel, ValidationError
+
+
+class ChatTurn(BaseModel):
+    role: str
+    content: str
+
+
+# prove it rejects a bad role
+try:
+    ChatTurn(role=123, content="nope")
+    print("that should not have been accepted")
+except ValidationError:
+    print("ChatTurn rejected a numeric role, as it should")
+
+
+def timed(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        print(f"{func.__name__} took {time.time() - start:.3f}s")
+        return result
+    return wrapper
+
+
+class ChatClient:
+    def __init__(self, model):
+        self.model = model
+        self.history = []
+
+    async def ask(self, message):
+        await asyncio.sleep(0.2)          # stands in for the network
+        self.history.append(ChatTurn(role="user", content=message))
+        reply = f"[{self.model}] reply to: {message}"
+        self.history.append(ChatTurn(role="assistant", content=reply))
+        return reply
+
+    @timed
+    def report(self):
+        for turn in self.history:
+            print(f"  {turn.role:>9}: {turn.content}")
+        return len(self.history)
+
+
+client = ChatClient("claude-sonnet-4-6")
+
+start = time.time()
+replies = await asyncio.gather(
+    client.ask("What is my name?"),
+    client.ask("What was covered in week 2?"),
+    client.ask("Summarise that."),
+)
+print(f"three questions answered in {time.time() - start:.2f}s, not 0.60s")
+
+print()
+turns = client.report()
+print("history holds", turns, "turns")
+```
 
 ---
 

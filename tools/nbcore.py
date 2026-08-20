@@ -158,8 +158,16 @@ def _slide_has_code(cells, index):
     return False
 
 
-def build(cells, solved):
-    """Render the cell list as a notebook. solved=True fills in the blanks."""
+LAB_PLACEHOLDER = "# Your lab answer goes here."
+
+
+def build(cells, solved, lab_answer=None):
+    """Render the cell list as a notebook.
+
+    solved=True fills in the exercise blanks and, when lab_answer is given,
+    replaces the empty lab cell with the worked answer so the build can execute
+    it like any other cell.
+    """
     nb = nbf.v4.new_notebook()
     out = []
 
@@ -182,7 +190,10 @@ def build(cells, solved):
         elif kind == "practice":
             out.append(nbf.v4.new_markdown_cell(_nb_practice(meta, payload)))
         elif kind == "code":
-            out.append(nbf.v4.new_code_cell(payload))
+            src = payload
+            if solved and lab_answer and LAB_PLACEHOLDER in src:
+                src = lab_answer.strip("\n")
+            out.append(nbf.v4.new_code_cell(src))
         elif kind == "todo":
             cell = nbf.v4.new_code_cell(meta if solved else payload)
             cell.metadata["tags"] = ["exercise"]

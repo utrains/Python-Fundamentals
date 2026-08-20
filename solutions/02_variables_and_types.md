@@ -84,7 +84,25 @@ Use `isinstance()` to check that the cast really produced a float, and print
 that check on its own line. You do not need an `if` for this, just print the
 result of the check.
 
-There is no single right answer to a lab, so none is given here. Check your work against the checklist in the notebook. If it ticks every box and runs without an error, it is right.
+**One way to do it.** A lab is open ended, so this is not the only right answer. Compare it against yours once you have had a go, and check your own version against the tick list in the notebook.
+
+```python
+cpu_count = 4
+memory_gb = 16.5
+hostname = "web-01"
+in_production = True
+
+print("Host:", hostname, "| CPUs:", cpu_count, "| Memory:", memory_gb,
+      "GB | Production:", in_production)
+
+# The temperature arrives as text, the way input() would hand it to you.
+temperature_text = "0.9"
+temperature = float(temperature_text)
+
+print("Temperature     :", temperature, type(temperature))
+print("Cast gave a float:", isinstance(temperature, float))
+print("Still text?      :", isinstance(temperature_text, str))
+```
 
 ---
 

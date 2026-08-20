@@ -12,6 +12,8 @@ The full solved notebooks still get built into .build/ so that
 
 from pathlib import Path
 
+import lab_answers
+
 ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -76,9 +78,14 @@ def module_answers(number, title, slug, cells):
             "",
             lab_brief,
             "",
-            "There is no single right answer to a lab, so none is given here. "
-            "Check your work against the checklist in the notebook. If it ticks "
-            "every box and runs without an error, it is right.",
+            "**One way to do it.** A lab is open ended, so this is not the "
+            "only right answer. Compare it against yours once you have had a "
+            "go, and check your own version against the tick list in the "
+            "notebook.",
+            "",
+            "```python",
+            lab_answers.ANSWERS[number].strip(),
+            "```",
             "",
         ]
 
@@ -100,9 +107,12 @@ def index_page(modules):
         [
             "# Answers",
             "",
-            "One file per module, holding the two **Your turn** answers and the "
-            "lab brief. The slide content is not repeated here; it is in the "
-            "[README](../README.md) and in the notebooks themselves.",
+            "One file per module: the two **Your turn** answers, and one "
+            "worked answer for the lab. The slide content is not repeated "
+            "here; it is in the [README](../README.md).",
+            "",
+            "Every answer on these pages is executed by the build, so none of "
+            "them can quietly stop working.",
             "",
             "Work the exercise first. A blank you filled in yourself is worth "
             "more than one you read.",
@@ -116,8 +126,8 @@ def index_page(modules):
             "### Why these are not notebooks",
             "",
             "A solved copy of a whole notebook is mostly the same slide prose "
-            "you have already read, and only the filled in cells differ. So the "
-            "answers live here as markdown you can read on GitHub without "
+            "you have already read, and only the filled in cells differ. So "
+            "the answers live here as markdown you can read on GitHub without "
             "opening anything.",
             "",
             "If you want a solved notebook you can actually run, build one:",

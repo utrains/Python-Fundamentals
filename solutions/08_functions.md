@@ -117,7 +117,42 @@ Prove all three work by calling `report(format_bill, 120.0, 340.5, 88.25)`.
 For extra credit, add a generator that yields each resource cost as a running
 total, the way `stream_reply` did.
 
-There is no single right answer to a lab, so none is given here. Check your work against the checklist in the notebook. If it ticks every box and runs without an error, it is right.
+**One way to do it.** A lab is open ended, so this is not the only right answer. Compare it against yours once you have had a go, and check your own version against the tick list in the notebook.
+
+```python
+def monthly_cost(*resources):
+    return sum(resources)
+
+
+def format_bill(total, currency="USD", warn_above=500):
+    line = f"{currency} {total:.2f}"
+    if total > warn_above:
+        line += " OVER BUDGET"
+    return line
+
+
+def report(builder, *resources):
+    total = monthly_cost(*resources)
+    return builder(total)
+
+
+print(report(format_bill, 120.0, 340.5, 88.25))
+print(report(format_bill, 10.0, 20.0))
+
+print()
+
+
+# extra credit: the same costs, yielded as a running total
+def running_total(*resources):
+    total = 0
+    for cost in resources:
+        total += cost
+        yield total
+
+
+for so_far in running_total(120.0, 340.5, 88.25):
+    print(f"running total: {so_far:.2f}")
+```
 
 ---
 

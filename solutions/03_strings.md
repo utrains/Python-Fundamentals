@@ -84,7 +84,30 @@ count.
 
 Finish with an f-string that reassembles a one line summary.
 
-There is no single right answer to a lab, so none is given here. Check your work against the checklist in the notebook. If it ticks every box and runs without an error, it is right.
+**One way to do it.** A lab is open ended, so this is not the only right answer. Compare it against yours once you have had a go, and check your own version against the tick list in the notebook.
+
+```python
+line = "2024-08-19 [ERROR] payment-service | Database Connection Failed | retry=3"
+
+date = line[:10]
+rest = line[11:]
+
+severity = rest.split("]")[0].strip("[")
+
+fields = rest.split("|")
+service = fields[0].split("]")[1].strip()
+message = fields[1].strip()
+retry = int(fields[2].split("=")[1])
+
+print("Date    :", date)
+print("Severity:", severity)
+print("Service :", service)
+print("Message :", message)
+print("Retry   :", retry, type(retry))
+
+print()
+print(f"{date} {severity} on {service}: {message} (retry {retry})")
+```
 
 ---
 

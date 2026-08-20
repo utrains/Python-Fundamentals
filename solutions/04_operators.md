@@ -94,7 +94,25 @@ Work out and print four things, one per line:
 You do not need an `if` for any of this. Each answer is an expression you can
 print directly.
 
-There is no single right answer to a lab, so none is given here. Check your work against the checklist in the notebook. If it ticks every box and runs without an error, it is right.
+**One way to do it.** A lab is open ended, so this is not the only right answer. Compare it against yours once you have had a go, and check your own version against the tick list in the notebook.
+
+```python
+budget = 500.0
+spend = 612.40
+severity = 2
+business_hours = False
+on_call_region = "eu-west-1"
+
+over_budget = spend > budget
+over_by_percent = ((spend - budget) / budget) * 100
+should_page = severity == 1 or business_hours
+covers_eu = "eu-west" in on_call_region
+
+print("Over budget   :", over_budget)
+print(f"Over by       : {over_by_percent:.1f}%")
+print("Should page   :", should_page)
+print("Covers eu-west:", covers_eu)
+```
 
 ---
 

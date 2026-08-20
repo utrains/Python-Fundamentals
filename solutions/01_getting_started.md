@@ -73,7 +73,25 @@ Finish by printing three fake response tokens on the same line using `end` and
 Everything you need is `print()`, the arithmetic operators, and joining text
 with `+`.
 
-There is no single right answer to a lab, so none is given here. Check your work against the checklist in the notebook. If it ticks every box and runs without an error, it is right.
+**One way to do it.** A lab is open ended, so this is not the only right answer. Compare it against yours once you have had a go, and check your own version against the tick list in the notebook.
+
+```python
+service = "payment-gateway"
+latency_ms = 45
+status = "OK"
+
+print("=== Utrains health check ===")
+print("Service:", service, "| Latency:", latency_ms, "ms | Status:", status)
+
+total_requests = 5000
+failed_requests = 12
+
+print("Error rate:", (failed_requests / total_requests) * 100, "%")
+
+print("Token 1 ", end="", flush=True)
+print("Token 2 ", end="", flush=True)
+print("Token 3")
+```
 
 ---
 

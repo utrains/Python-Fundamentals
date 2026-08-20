@@ -14,7 +14,7 @@ Three places, each holding one thing:
 |---|---|
 | this README | every slide, in full, in deck order, with its code |
 | `notebooks/` | the working copy: slide headings, code cells, exercises, labs |
-| `solutions/` | the answers to the 22 exercises, as markdown |
+| `solutions/` | the 22 exercise answers and a worked answer for each lab |
 
 Each notebook has runnable code for every slide that has any, **two "Your turn"
 cells** with deliberate `____` blanks that fail until you complete them, and a
@@ -171,8 +171,12 @@ Run it as it is first. It will fail, either with a `SyntaxError` or a
 Getting used to reading the error message is half of what these cells teach.
 
 If you get stuck, [`solutions/`](solutions/) has one markdown file per module
-with the answer to both exercises. Try it yourself first; the answer is much
-less useful than the attempt.
+with the answer to both exercises and a worked answer for the lab. Try it
+yourself first; the answer is much less useful than the attempt.
+
+A lab is open ended, so the answer there is one way to do it rather than the
+only way. Every answer is executed by the build, so what you are comparing
+against is known to work.
 
 **Every exercise stays inside its own module.** A Module 2 exercise will never
 need an `if`, because `if` is not taught until Module 5. The build enforces

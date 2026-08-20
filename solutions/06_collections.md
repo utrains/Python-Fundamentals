@@ -83,7 +83,45 @@ Then produce a summary that prints:
 4. The longest message and which role sent it, found by comparing lengths as
    you loop rather than by eye
 
-There is no single right answer to a lab, so none is given here. Check your work against the checklist in the notebook. If it ticks every box and runs without an error, it is right.
+**One way to do it.** A lab is open ended, so this is not the only right answer. Compare it against yours once you have had a go, and check your own version against the tick list in the notebook.
+
+```python
+messages = [
+    {"role": "user", "content": "Hi, I am Serge."},
+    {"role": "assistant", "content": "Hello Serge! Nice to meet you."},
+    {"role": "user", "content": "What was covered in week 2?"},
+    {"role": "assistant", "content": "Linux, SSH keys and file permissions."},
+    {"role": "user", "content": "Thanks."},
+]
+
+# 1. only the assistant's replies, with a comprehension
+replies = [m["content"] for m in messages if m["role"] == "assistant"]
+
+print("Assistant replies:")
+for reply in replies:
+    print(" -", reply)
+
+# 2. turns per role, built as you loop
+counts = {}
+for m in messages:
+    counts[m["role"]] = counts.get(m["role"], 0) + 1
+
+print()
+print("Turns per role:", counts)
+
+# 3. the unique roles
+roles = set(m["role"] for m in messages)
+print("Unique roles  :", roles)
+
+# 4. the longest message, found by comparing lengths
+longest = messages[0]
+for m in messages:
+    if len(m["content"]) > len(longest["content"]):
+        longest = m
+
+print()
+print(f"Longest came from {longest['role']}: {longest['content']}")
+```
 
 ---
 

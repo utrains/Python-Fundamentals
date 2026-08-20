@@ -1,6 +1,8 @@
 # Answers
 
-One file per module, holding the two **Your turn** answers and the lab brief. The slide content is not repeated here; it is in the [README](../README.md) and in the notebooks themselves.
+One file per module: the two **Your turn** answers, and one worked answer for the lab. The slide content is not repeated here; it is in the [README](../README.md).
+
+Every answer on these pages is executed by the build, so none of them can quietly stop working.
 
 Work the exercise first. A blank you filled in yourself is worth more than one you read.
 

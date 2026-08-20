@@ -19,6 +19,7 @@ import nbformat as nbf
 from nbcore import build
 import build_readme
 import build_solutions
+import lab_answers
 import content_a
 import content_b
 import content_c
@@ -71,13 +72,14 @@ def write_all():
     (ROOT / "notebooks").mkdir(exist_ok=True)
     BUILD_DIR.mkdir(parents=True, exist_ok=True)
 
-    for slug, _num, _title, _sub, cells in MODULES:
+    for slug, num, _title, _sub, cells in MODULES:
         student = build(cells, solved=False)
-        solved = build(cells, solved=True)
+        solved = build(cells, solved=True, lab_answer=lab_answers.ANSWERS.get(num))
 
         nbf.write(student, str(ROOT / "notebooks" / f"{slug}.ipynb"))
         nbf.write(solved, str(BUILD_DIR / f"{slug}_solved.ipynb"))
 
+        _ = num
         n_ex = sum(1 for k, _, _ in cells if k == "todo")
         n_code = sum(1 for k, _, _ in cells if k in ("code", "todo"))
         n_slides = sum(1 for k, _, _ in cells if k == "slide")

@@ -100,7 +100,39 @@ stages succeeded and how many failed.
 For extra credit, wrap the `migrate` stage in the retry pattern from slide 5,
 giving it three attempts before recording it as failed.
 
-There is no single right answer to a lab, so none is given here. Check your work against the checklist in the notebook. If it ticks every box and runs without an error, it is right.
+**One way to do it.** A lab is open ended, so this is not the only right answer. Compare it against yours once you have had a go, and check your own version against the tick list in the notebook.
+
+```python
+def deploy(stage):
+    if stage == "migrate":
+        raise RuntimeError("schema lock timeout")
+    return f"{stage} completed"
+
+
+stages = ["build", "test", "migrate", "release"]
+results = {}
+
+for stage in stages:
+    try:
+        results[stage] = deploy(stage)
+    except RuntimeError as e:
+        results[stage] = f"FAILED: {e}"
+    finally:
+        # runs for every stage, whether it worked or not
+        print(f"{stage:8s} -> {results[stage]}")
+
+succeeded = 0
+failed = 0
+
+for outcome in results.values():
+    if outcome.startswith("FAILED"):
+        failed += 1
+    else:
+        succeeded += 1
+
+print()
+print(f"{succeeded} succeeded, {failed} failed")
+```
 
 ---
 

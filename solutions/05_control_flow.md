@@ -89,7 +89,46 @@ stops early with `break` on the fourth, printing the attempt number each time.
 Fourth, loop over the string `"ERR404"` and use `continue` to skip the digits,
 printing only the letters.
 
-There is no single right answer to a lab, so none is given here. Check your work against the checklist in the notebook. If it ticks every box and runs without an error, it is right.
+**One way to do it.** A lab is open ended, so this is not the only right answer. Compare it against yours once you have had a go, and check your own version against the tick list in the notebook.
+
+```python
+# 1. classify each severity level
+page_count = 0
+
+for severity in range(1, 4):
+    if severity == 1:
+        print(f"severity {severity}: paging the on-call engineer")
+        page_count += 1
+    elif severity == 2:
+        print(f"severity {severity}: logging a warning")
+    else:
+        print(f"severity {severity}: no action required")
+
+# 2. the counter, printed once the loop has finished
+print("page level incidents:", page_count)
+print()
+
+# 3. up to six attempts, stopping early on the fourth
+attempt = 0
+
+while attempt < 6:
+    attempt += 1
+    print("deployment attempt", attempt)
+
+    if attempt == 4:
+        print("deployment succeeded")
+        break
+
+print()
+
+# 4. skip the digits, print only the letters
+for char in "ERR404":
+    if char in "0123456789":
+        continue
+    print(char, end="")
+
+print()
+```
 
 ---
 
